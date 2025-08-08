@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard Pizzeria</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Benvenuto nella Dashboard</h1>
+
+    <h2>Task della settimana</h2>
+    <ul>
+        <li th:each="task : ${tasks}">
+            <span th:text="${task.description}"></span> - 
+            <span th:text="${task.dueDate}"></span>
+            <span th:if="${task.completed}">✅</span>
+            <span th:if="${!task.completed}">❌</span>
+        </li>
+    </ul>
+</body>
+</html>
