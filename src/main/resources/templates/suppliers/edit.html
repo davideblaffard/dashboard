@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifica Fornitore</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2 class="mb-4">Modifica Dati Fornitore</h2>
+    
+    <form th:action="@{/order/update}" th:object="${order}" method="post" class="card p-4 shadow-sm">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control" th:field="*{name}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" th:field="*{email}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Soggetti in CC</label>
+            <input type="text" class="form-control" th:field="*{cc}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Giorni di consegna</label>
+            <input type="text" class="form-control" th:field="*{deliveryDays}">
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a th:href="@{/order}" class="btn btn-secondary">Annulla</a>
+            <button type="submit" class="btn btn-primary">Salva modifiche</button>
+        </div>
+    </form>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
