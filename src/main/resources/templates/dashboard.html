@@ -1,20 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Dashboard Pizzeria</title>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
 </head>
-<body>
-    <h1>Benvenuto nella Dashboard</h1>
+<body class="bg-light">
 
-    <h2>Task della settimana</h2>
-    <ul>
-        <li th:each="task : ${tasks}">
-            <span th:text="${task.description}"></span> - 
-            <span th:text="${task.dueDate}"></span>
-            <span th:if="${task.completed}">✅</span>
-            <span th:if="${!task.completed}">❌</span>
-        </li>
-    </ul>
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <span class="navbar-brand mb-0 h1">Pannello di Controllo</span>
+      <a href="/logout" class="btn btn-outline-secondary">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h2 class="mb-4">Benvenuto nella Dashboard</h2>
+
+    <div class="row g-4">
+
+      <div class="col-md-4">
+        <a th:href="@{/suppliers}" class="text-decoration-none text-dark">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title">Fornitori</h5>
+              <p class="card-text">Gestisci l'elenco dei fornitori, modifica o rimuovi dati esistenti.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-md-4">
+        <a th:href="@{/report}" class="text-decoration-none text-dark">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title">Report</h5>
+              <p class="card-text">Accedi ai report mensili o annuali relativi agli ordini effettuati.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
