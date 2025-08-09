@@ -7,7 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Controller
@@ -16,6 +21,8 @@ public class SupplierController {
 
     @Autowired
     private SupplierRepository supplierRepository;
+
+    private final String UPLOAD_DIR = "uploads/";
 
     // INDEX - mostra tutti i fornitori
     @GetMapping("")
@@ -45,7 +52,17 @@ public class SupplierController {
 
     // STORE - salva nuovo fornitore
     @PostMapping("/store")
-    public String store(@ModelAttribute Supplier supplier) {
+    public String store(@ModelAttribute Supplier supplier,
+                        @RequestParam("file") MultipartFile file) throws IOException{
+
+        if (!file.isEmpty()) {
+            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path path = Paths.get(UPLOAD_DIR + filename);
+            Files.createDirectories(path.getParent());
+            file.transferTo(path.toFile());
+            supplier.setOrderFormFilename(filename);
+        }
+
         supplierRepository.save(supplier);
         return "redirect:/suppliers";
     }
@@ -64,10 +81,37 @@ public class SupplierController {
 
     // UPDATE - salva modifiche
     @PostMapping("/update/{id}")
-    public String update(@PathVariable Integer id, @ModelAttribute Supplier supplier) {
+    public String update(@PathVariable Integer id, @ModelAttribute Supplier supplier,
+                        @RequestParam("file") MultipartFile file) throws IOException {
+
+        Optional<Supplier> existingOpt = supplierRepository.findById(id);
+        if (existingOpt.isPresent()) {
+            Supplier existing = existingOpt.get();
+
+            // Mantieni vecchio file se non caricato nuovo
+            if (!file.isEmpty()) {
+                String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path path = Paths.get(UPLOAD_DIR + filename);
+                Files.createDirectories(path.getParent());
+                file.transferTo(path.toFile());
+                supplier.setOrderFormFilename(filename);
+            } else {
+                supplier.setOrderFormFilename(existing.getOrderFormFilename());
+            }
+
         supplier.setId(id);
         supplierRepository.save(supplier);
         return "redirect:/suppliers";
+        }
+        return "redirect:/suppliers";
+    }
+
+    // DOWNLOAD FILE
+    @GetMapping("/download/{filename}")
+    @ResponseBody
+    public byte[] downloadFile(@PathVariable String filename) throws IOException {
+        Path path = Paths.get(UPLOAD_DIR + filename);
+        return Files.readAllBytes(path);
     }
 
     // DELETE - elimina un fornitore

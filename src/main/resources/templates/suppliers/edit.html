@@ -8,35 +8,48 @@
 <body class="bg-light">
 
 <div class="container mt-5">
-    <h2 class="mb-4">Modifica Dati Fornitore</h2>
-    
-    <form th:action="@{/order/update}" th:object="${order}" method="post" class="card p-4 shadow-sm">
-        <input type="hidden" th:field="*{id}" />
+    <h2>Modifica Fornitore</h2>
+    <form th:action="@{'/suppliers/update/' + ${supplier.id}}"
+          method="post" enctype="multipart/form-data">
 
         <div class="mb-3">
             <label class="form-label">Nome</label>
-            <input type="text" class="form-control" th:field="*{name}" required>
+            <input type="text" class="form-control" name="name" th:value="${supplier.name}" required>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Email</label>
-            <input type="email" class="form-control" th:field="*{email}" required>
+            <input type="email" class="form-control" name="email" th:value="${supplier.email}" required>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Soggetti in CC</label>
-            <input type="text" class="form-control" th:field="*{cc}">
+            <label class="form-label">Email in CC</label>
+            <input type="text" class="form-control" name="ccEmails" th:value="${supplier.ccEmails}">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Giorni di consegna</label>
-            <input type="text" class="form-control" th:field="*{deliveryDays}">
+            <input type="text" class="form-control" name="deliveryDays" th:value="${supplier.deliveryDays}">
         </div>
 
-        <div class="d-flex justify-content-between">
-            <a th:href="@{/order}" class="btn btn-secondary">Annulla</a>
-            <button type="submit" class="btn btn-primary">Salva modifiche</button>
+        <div class="mb-3">
+            <label class="form-label">Note</label>
+            <textarea class="form-control" name="notes" th:text="${supplier.notes}"></textarea>
         </div>
+
+        <div class="mb-3">
+            <label class="form-label">Modulo d'Ordine (PDF o Excel)</label>
+            <input type="file" class="form-control" name="file">
+            <div th:if="${supplier.orderFormFilename != null}">
+                <small class="text-muted">File attuale:</small>
+                <a th:href="@{'/suppliers/download/' + ${supplier.orderFormFilename}}" target="_blank">
+                    Scarica
+                </a>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Aggiorna</button>
+        <a th:href="@{/suppliers}" class="btn btn-secondary">Annulla</a>
     </form>
 </div>
 

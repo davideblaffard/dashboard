@@ -21,7 +21,9 @@ public class Supplier {
     private String deliveryDays; // es: "Lunedì e Giovedì"
 
     @Lob
-    private String orderFormTemplate; // testo precompilato modificabile
+    private String notes; // testo 
+
+    private String orderFormFilename;
 
     // Costruttori
     public Supplier() {}
@@ -31,7 +33,7 @@ public class Supplier {
         this.email = email;
         this.ccEmails = ccEmails;
         this.deliveryDays = deliveryDays;
-        this.orderFormTemplate = orderFormTemplate;
+        this.orderFormFilename = orderFormFilename;
     }
 
     public Integer getId() {
@@ -74,12 +76,22 @@ public class Supplier {
         this.deliveryDays = deliveryDays;
     }
 
-    public String getOrderFormTemplate() {
-        return orderFormTemplate;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setOrderFormTemplate(String orderFormTemplate) {
-        this.orderFormTemplate = orderFormTemplate;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
+
+    public String getOrderFormFilename() {
+        return orderFormFilename;
+    }
+
+    public void setOrderFormFilename(String orderFormFilename) {
+        this.orderFormFilename = orderFormFilename;
+    }
+
+    
     
 }

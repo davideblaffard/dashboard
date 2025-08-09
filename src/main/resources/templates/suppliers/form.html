@@ -2,30 +2,56 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>New Supplier</title>
+    <title>Supplier Form</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
 </head>
-<body>
-<h1>Add New Supplier</h1>
+<body class="bg-light">
 
-<form th:action="@{/suppliers/store}" th:object="${supplier}" method="post">
-    <label for="name">Name:</label>
-    <input type="text" id="name" th:field="*{name}" required><br>
+<div class="container mt-5">
+    <h2 th:text="${supplier.id} != null ? 'Modifica Fornitore' : 'Nuovo Fornitore'"></h2>
+    <form th:action="@{${supplier.id} != null ? '/suppliers/update/' + ${supplier.id} : '/suppliers/store'}"
+          method="post" enctype="multipart/form-data">
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" th:field="*{email}" required><br>
+        <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control" name="name" th:value="${supplier.name}">
+        </div>
 
-    <label for="ccEmails">CC Emails:</label>
-    <input type="text" id="ccEmails" th:field="*{ccEmails}"><br>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" th:value="${supplier.email}">
+        </div>
 
-    <label for="deliveryDays">Delivery Days:</label>
-    <input type="text" id="deliveryDays" th:field="*{deliveryDays}"><br>
+        <div class="mb-3">
+            <label class="form-label">Email in CC</label>
+            <input type="text" class="form-control" name="ccEmails" th:value="${supplier.ccEmails}">
+        </div>
 
-    <label for="orderFormTemplate">Order Form Template:</label>
-    <textarea id="orderFormTemplate" th:field="*{orderFormTemplate}"></textarea><br>
+        <div class="mb-3">
+            <label class="form-label">Giorni di consegna</label>
+            <input type="text" class="form-control" name="deliveryDays" th:value="${supplier.deliveryDays}">
+        </div>
 
-    <button type="submit">Save</button>
-</form>
+        <div class="mb-3">
+            <label class="form-label">Note</label>
+            <textarea class="form-control" name="notes" th:text="${supplier.notes}"></textarea>
+        </div>
 
+        <div class="mb-3">
+            <label class="form-label">Modulo d'Ordine (PDF o Excel)</label>
+            <input type="file" class="form-control" name="file">
+            <div th:if="${supplier.orderFormFilename != null}">
+                <a th:href="@{'/suppliers/download/' + ${supplier.orderFormFilename}}" target="_blank">
+                    Scarica file attuale
+                </a>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salva</button>
+        <a th:href="@{/suppliers}" class="btn btn-secondary">Annulla</a>
+    </form>
+</div>
 <a th:href="@{/suppliers}">Back to Suppliers</a>
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
