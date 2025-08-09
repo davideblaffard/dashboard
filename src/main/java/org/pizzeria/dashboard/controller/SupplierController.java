@@ -30,7 +30,7 @@ public class SupplierController {
         Optional<Supplier> result = supplierRepository.findById(id);
         if (result.isPresent()) {
             model.addAttribute("supplier", result.get());
-            return "supplier/show";
+            return "suppliers/show";
         } else {
             return "redirect:/suppliers";
         }
@@ -40,7 +40,7 @@ public class SupplierController {
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("supplier", new Supplier());
-        return "supplier/create";
+        return "suppliers/form";
     }
 
     // STORE - salva nuovo fornitore
@@ -56,7 +56,7 @@ public class SupplierController {
         Optional<Supplier> result = supplierRepository.findById(id);
         if (result.isPresent()) {
             model.addAttribute("supplier", result.get());
-            return "supplier/edit";
+            return "suppliers/edit";
         } else {
             return "redirect:/suppliers";
         }
