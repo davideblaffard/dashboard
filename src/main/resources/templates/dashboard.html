@@ -10,8 +10,7 @@
   <nav class="navbar navbar-light bg-white shadow-sm">
     <div class="container">
       <span class="navbar-brand mb-0 h1">Pannello di Controllo</span>
-      <a href="/logout" class="btn btn-outline-secondary">Logout</a>
-    </div>
+      <a th:href="@{/logout}" class="btn btn-danger">Logout</a>    </div>
   </nav>
 
   <div class="container mt-5">
@@ -42,7 +41,7 @@
       </div>
       <!-- CONTRATTI  -->
       <div class="col-md-4">
-        <a th:href="@{/deals}" class="text-decoration-none text-dark">
+        <a th:href="@{/contracts}" class="text-decoration-none text-dark">
           <div class="card h-100 shadow-sm border-0">
             <div class="card-body">
               <h5 class="card-title">Contratti attivi</h5>
