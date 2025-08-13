@@ -25,8 +25,9 @@
         <dt class="col-sm-3">Order Form Template:</dt>
         <dd class="col-sm-9" th:text="${supplier.orderFormFilename}"></dd>
     </dl>
-
-   
+    <div class="mt-3">
+        <a th:href="@{/user/dashboard}" class="btn btn-warning">Torna alla Dashboard</a>
+    </div>
 </div>
 </body>
 </html>
