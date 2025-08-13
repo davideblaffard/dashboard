@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Contratti Attivi</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}" />
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Contratti Attivi</h2>
+      <a th:href="@{/contracts/create}" class="btn btn-outline-dark">Aggiungi Dipendente</a>
+    </div>
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Nominativo</th>
+          <th class="text-center">Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="c : ${contracts}">
+          <td th:text="${c.id}">1</td>
+          <td th:text="${c.name}">Mario Rossi</td>
+          <td class="text-center">
+            <a th:href="@{'/contracts/' + ${c.id}}" class="btn btn-sm btn-outline-secondary me-1">Info</a>
+            <form th:action="@{'/contracts/delete/' + ${c.id}}" method="post" class="d-inline"
+                  onsubmit="return confirm('Sei sicuro di voler eliminare?');">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

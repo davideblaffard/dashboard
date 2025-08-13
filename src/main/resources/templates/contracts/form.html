@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuovo Contratto</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Nuovo Dipendente</h2>
+
+    <form th:action="@{/contracts/store}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control" name="name">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ruolo</label>
+            <input type="text" class="form-control" name="role">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tipo Contratto</label>
+            <input type="text" class="form-control" name="contractType">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Scadenza</label>
+            <input type="date" class="form-control" name="contractEnd">
+        </div>
+
+        <button class="btn btn-success">Salva</button>
+    </form>
+</div>
+</body>
+</html>
