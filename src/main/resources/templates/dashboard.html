@@ -1,70 +1,150 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Dashboard</title>
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
 </head>
 <body class="bg-light">
 
-  <nav class="navbar navbar-light bg-white shadow-sm">
-    <div class="container">
-      <span class="navbar-brand mb-0 h1">Pannello di Controllo</span>
-      <a th:href="@{/logout}" class="btn btn-danger">Logout</a>    </div>
-  </nav>
-
-  <div class="container mt-5">
-    <h2 class="mb-4">Benvenuto nella Dashboard</h2>
-
-    <div class="row g-4">
-
-      <div class="col-md-4">
-        <a th:href="@{/suppliers}" class="text-decoration-none text-dark">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="card-title">Fornitori</h5>
-              <p class="card-text">Gestisci l'elenco dei fornitori, modifica o rimuovi dati esistenti.</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="col-md-4">
-        <a th:href="@{/report}" class="text-decoration-none text-dark">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="card-title">Report</h5>
-              <p class="card-text">Accedi ai report mensili o annuali relativi agli ordini effettuati.</p>
-            </div>
-          </div>
-        </a>
-      </div>
-      <!-- CONTRATTI  -->
-      <div class="col-md-4">
-        <a th:href="@{/contracts}" class="text-decoration-none text-dark">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="card-title">Contratti attivi</h5>
-              <p class="card-text">Accedi ai moduli di contratto attivi dello staff.</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="col-md-4">
-        <a th:href="@{/budget}" class="text-decoration-none text-dark">
-          <div class="card h-100 shadow-sm border-0">
-            <div class="card-body">
-              <h5 class="card-title">Target Budget</h5>
-              <p class="card-text">Controlla l'andamento della settimana.</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-    </div>
+<nav class="navbar navbar-light bg-white shadow-sm">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1">Pannello di Controllo</span>
+    <a href="/logout" class="btn btn-outline-secondary">Logout</a>
   </div>
+</nav>
 
-  <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+<div class="container my-4">
+  <div class="row g-4">
+    <!-- COLONNA SINISTRA: NAV -->
+    <aside class="col-lg-3">
+      <div class="list-group shadow-sm">
+        <a th:href="@{/dashboard}" class="list-group-item list-group-item-action active">Dashboard</a>
+        <a th:href="@{/suppliers}" class="list-group-item list-group-item-action">Fornitori</a>
+        <a th:href="@{/contracts}" class="list-group-item list-group-item-action">Contratti attivi</a>
+        <a th:href="@{/report}" class="list-group-item list-group-item-action">Report</a>
+      </div>
+    </aside>
+
+<!-- COLONNA DESTRA: TASK -->
+    <main class="col-lg-9">
+
+      <!-- Header -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+        <h4 class="mb-2">
+          Task di
+          <span class="badge bg-dark" th:text="${#temporals.format(selectedDate, 'dd/MM/yyyy')}">--/--/----</span>
+        </h4>
+        <a th:href="@{/dashboard}" class="btn btn-outline-secondary btn-sm">Oggi</a>
+      </div>
+
+      <!-- Mini calendario (settimana) -->
+      <div class="d-flex gap-2 mb-4 flex-wrap">
+        <div th:each="d : ${weekDays}">
+          <a class="btn btn-outline-dark position-relative"
+             th:classappend="${d.equals(selectedDate)} ? ' active' : ''"
+             th:href="@{/dashboard(date=${d})}">
+            <div class="small text-uppercase" th:text="${#temporals.format(d, 'EEE')}">Lun</div>
+            <div class="fw-bold" th:text="${#temporals.format(d, 'dd')}">01</div>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+              th:text="${counts[d]}">0</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Add -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <form th:action="@{/tasks}" method="post" class="row g-2 align-items-end">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="redirect"
+                  th:value="@{'/dashboard'(date=${#temporals.format(selectedDate, 'yyyy-MM-dd')})}">
+
+            <div class="col-md-5">
+              <label class="form-label">Titolo</label>
+              <input class="form-control" name="title" placeholder="Es. Invia inventario" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Categoria</label>
+              <select class="form-select" name="category" required>
+                <option value="DDT">DDT</option>
+                <option value="TIMBRATURE">Timbrature</option>
+                <option value="ORDINI">Ordini</option>
+                <option value="ANALISI_REPORT">Analisi report</option>
+                <option value="ORARI">Orari</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Data</label>
+              <input type="date" class="form-control" name="dueDate"
+                th:value="${#temporals.format(selectedDate, 'yyyy-MM-dd')}" required>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Ricorrenza</label>
+              <select class="form-select" name="recurrence">
+                <option value="NONE">Nessuna</option>
+                <option value="DAILY">Giornaliera</option>
+                <option value="WEEKDAYS">Feriale (Lun-Ven)</option>
+                <option value="WEEKLY">Settimanale</option>
+                <option value="MONTHLY">Mensile</option>
+              </select>
+            </div>
+
+            <div class="col-12 text-end">
+              <button class="btn btn-dark">Aggiungi</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Lista task per categoria -->
+      <div class="row g-3">
+        <div class="col-12" th:each="cat : ${categories}">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+
+              <!-- Titolo categoria + badge numero task -->
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="m-0" th:text="${cat}">CATEGORIA</h6>
+                <span class="badge bg-secondary"
+                      th:text="${tasksByCategory[cat]?.size()}">0</span>
+              </div>
+
+              <!-- Lista task della categoria -->
+              <div class="list-group" th:if="${tasksByCategory[cat]?.size() > 0}">
+                <div class="list-group-item d-flex align-items-center justify-content-between"
+                     th:each="t : ${tasksByCategory[cat]}">
+                  <div class="d-flex align-items-center gap-2">
+                    <!-- Bottone toggle done -->
+                    <form th:action="@{|/tasks/${t.id}/toggle|}" method="post" class="m-0">
+                      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                      <input type="hidden" name="redirect"
+                             th:value="@{'/dashboard'(date=${#temporals.format(selectedDate, 'yyyy-MM-dd')})}">
+                      <button class="btn btn-sm btn-outline-secondary"
+                              th:text="${t.done} ? '✓' : '○'"></button>
+                    </form>
+
+                    <!-- Titolo task con barratura se completata -->
+                    <span th:classappend="${t.done} ? 'text-decoration-line-through text-muted' : ''"
+                          th:text="${t.title}">titolo task</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Messaggio se non ci sono task -->
+              <p class="text-muted m-0" th:if="${tasksByCategory[cat]?.size() == 0}">
+                Nessuna task in questa categoria.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>    
+    
+  </div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
