@@ -2,28 +2,78 @@ package org.pizzeria.dashboard.model;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "tasks")
 public class Task {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String description;
+    private String title;              // breve descrizione
+    @Enumerated(EnumType.STRING)
+    private TaskCategory category;     // DDT, TIMBRATURE, ...
+    private LocalDate dueDate;         // solo giorno
+    private boolean done = false;      // spuntata o no
 
-    private LocalDate dueDate;
+    @Enumerated(EnumType.STRING)
+    private Recurrence recurrence = Recurrence.NONE; // ricorrenza semplice
 
-    private boolean completed;
+    public Integer getId() {
+        return id;
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User assignedTo;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public TaskCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(TaskCategory category) {
+        this.category = category;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(Recurrence recurrence) {
+        this.recurrence = recurrence;
+    }
+
+    
 }
