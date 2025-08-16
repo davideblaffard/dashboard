@@ -1,18 +1,23 @@
 package org.pizzeria.dashboard.controller;
 
-
 import org.pizzeria.dashboard.model.Supplier;
 import org.pizzeria.dashboard.repository.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.MalformedURLException;
+import java.nio.file.*;
 import java.util.Optional;
 
 @Controller
@@ -22,102 +27,117 @@ public class SupplierController {
     @Autowired
     private SupplierRepository supplierRepository;
 
-    private final String UPLOAD_DIR = "uploads/";
+    private static final Path UPLOAD_DIR = Paths.get("uploads");
 
-    // INDEX - mostra tutti i fornitori
-    @GetMapping("")
+    // INDEX (fragment)
+    @GetMapping
     public String index(Model model) {
         model.addAttribute("suppliers", supplierRepository.findAll());
-        return "suppliers/index";
+        return "fragments/suppliers/index :: index";
     }
 
-    // SHOW - dettagli del singolo fornitore
+    // SHOW (fragment)
     @GetMapping("/{id}")
     public String show(@PathVariable Integer id, Model model) {
-        Optional<Supplier> result = supplierRepository.findById(id);
-        if (result.isPresent()) {
-            model.addAttribute("supplier", result.get());
-            return "suppliers/show";
-        } else {
-            return "redirect:/suppliers";
+        Optional<Supplier> opt = supplierRepository.findById(id);
+        if (opt.isEmpty()) {
+            model.addAttribute("suppliers", supplierRepository.findAll());
+            return "fragments/suppliers/index :: index";
         }
+        model.addAttribute("supplier", opt.get());
+        return "fragments/suppliers/show :: show";
     }
 
-    // CREATE - form per nuovo fornitore
+    // CREATE form (fragment)
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("supplier", new Supplier());
-        return "suppliers/form";
+        return "fragments/suppliers/form :: form";
     }
 
-    // STORE - salva nuovo fornitore
+    // EDIT form (fragment)
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable Integer id, Model model) {
+        Optional<Supplier> opt = supplierRepository.findById(id);
+        if (opt.isEmpty()) {
+            model.addAttribute("suppliers", supplierRepository.findAll());
+            return "fragments/suppliers/index :: index";
+        }
+        model.addAttribute("supplier", opt.get());
+        return "fragments/suppliers/form :: form";
+    }
+
+    // STORE (ritorna la lista aggiornata come fragment)
     @PostMapping("/store")
     public String store(@ModelAttribute Supplier supplier,
-                        @RequestParam("file") MultipartFile file) throws IOException{
+                        @RequestParam(name = "file", required = false) MultipartFile file,
+                        Model model) throws IOException {
 
-        if (!file.isEmpty()) {
-            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path path = Paths.get(UPLOAD_DIR + filename);
-            Files.createDirectories(path.getParent());
-            file.transferTo(path.toFile());
+        if (file != null && !file.isEmpty()) {
+            String filename = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            Path target = UPLOAD_DIR.resolve(filename).normalize();
+            Files.createDirectories(target.getParent());
+            file.transferTo(target.toFile());
             supplier.setOrderFormFilename(filename);
         }
 
         supplierRepository.save(supplier);
-        return "redirect:/suppliers";
+        model.addAttribute("suppliers", supplierRepository.findAll());
+        return "fragments/suppliers/index :: index";
     }
 
-    // EDIT - form per modificare fornitore (soprattutto il modulo)
-    @GetMapping("/edit/{id}")
-    public String edit(@PathVariable Integer id, Model model) {
-        Optional<Supplier> result = supplierRepository.findById(id);
-        if (result.isPresent()) {
-            model.addAttribute("supplier", result.get());
-            return "suppliers/edit";
-        } else {
-            return "redirect:/suppliers";
-        }
-    }
-
-    // UPDATE - salva modifiche
+    // UPDATE (ritorna la lista aggiornata come fragment)
     @PostMapping("/update/{id}")
-    public String update(@PathVariable Integer id, @ModelAttribute Supplier supplier,
-                        @RequestParam("file") MultipartFile file) throws IOException {
+    public String update(@PathVariable Integer id,
+                         @ModelAttribute Supplier form,
+                         @RequestParam(name = "file", required = false) MultipartFile file,
+                         Model model) throws IOException {
 
-        Optional<Supplier> existingOpt = supplierRepository.findById(id);
-        if (existingOpt.isPresent()) {
-            Supplier existing = existingOpt.get();
+        Optional<Supplier> opt = supplierRepository.findById(id);
+        if (opt.isPresent()) {
+            Supplier existing = opt.get();
 
-            // Mantieni vecchio file se non caricato nuovo
-            if (!file.isEmpty()) {
-                String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                Path path = Paths.get(UPLOAD_DIR + filename);
-                Files.createDirectories(path.getParent());
-                file.transferTo(path.toFile());
-                supplier.setOrderFormFilename(filename);
-            } else {
-                supplier.setOrderFormFilename(existing.getOrderFormFilename());
+            existing.setName(form.getName());
+            existing.setEmail(form.getEmail());
+            existing.setCcEmails(form.getCcEmails());
+            existing.setDeliveryDays(form.getDeliveryDays());
+            existing.setNotes(form.getNotes());
+
+            if (file != null && !file.isEmpty()) {
+                String filename = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+                Path target = UPLOAD_DIR.resolve(filename).normalize();
+                Files.createDirectories(target.getParent());
+                file.transferTo(target.toFile());
+                existing.setOrderFormFilename(filename);
             }
 
-        supplier.setId(id);
-        supplierRepository.save(supplier);
-        return "redirect:/suppliers";
+            supplierRepository.save(existing);
         }
-        return "redirect:/suppliers";
+
+        model.addAttribute("suppliers", supplierRepository.findAll());
+        return "fragments/suppliers/index :: index";
     }
 
-    // DOWNLOAD FILE
-    @GetMapping("/download/{filename}")
-    @ResponseBody
-    public byte[] downloadFile(@PathVariable String filename) throws IOException {
-        Path path = Paths.get(UPLOAD_DIR + filename);
-        return Files.readAllBytes(path);
-    }
-
-    // DELETE - elimina un fornitore
+    // DELETE (ritorna la lista aggiornata come fragment)
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable Integer id, Model model) {
         supplierRepository.deleteById(id);
-        return "redirect:/suppliers";
+        model.addAttribute("suppliers", supplierRepository.findAll());
+        return "fragments/suppliers/index :: index";
+    }
+
+    // DOWNLOAD file (binary)
+    @GetMapping("/download/{filename}")
+    public ResponseEntity<Resource> download(@PathVariable String filename) throws MalformedURLException {
+        Path safe = UPLOAD_DIR.resolve(filename).normalize();
+        Resource resource = new UrlResource(safe.toUri());
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+        String contentDisposition = ContentDisposition.attachment().filename(filename).build().toString();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 }
