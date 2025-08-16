@@ -3,43 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <title>Dashboard</title>
+
+  <!-- CSRF per fetch -->
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
   <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
 </head>
 <body class="bg-light">
 
 <div class="container-fluid">
   <div class="row">
-<!-- COLONNA SINISTRA: NAV -->
-  <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-    <div class="position-sticky pt-3">
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{dashboard(section='profile')}">Profilo</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/dashboard(section='contracts')}">Contratti attivi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/dashboard(section='suppliers')}">Fornitori</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/dashboard(section='reports')}">Report</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-danger" th:href="@{/logout}">Logout</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
 
-<!-- COLONNA DESTRA: TASK -->
+    <!-- COLONNA SINISTRA: NAV -->
+    <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link js-nav" th:href="@{/profile}">Profilo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-nav" th:href="@{/contracts}">Contratti attivi</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-nav" th:href="@{/suppliers}">Fornitori</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-nav" th:href="@{/reports}">Report</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" th:href="@{/logout}">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- COLONNA DESTRA: CONTENUTO -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div th:replace="${contentFragment}"></div>
+      <div id="content-area" class="py-3">
+        <p class="text-muted m-0">Seleziona una sezione dal menu a sinistra.</p>
+      </div>
     </main>
-      
+
   </div>
 </div>
 
 <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
 </body>
 </html>

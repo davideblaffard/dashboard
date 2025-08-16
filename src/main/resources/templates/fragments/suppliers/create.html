@@ -1,0 +1,30 @@
+<!-- FRAGMENT CREATE SUPPLIER -->
+<div th:fragment="create">
+    <h2 class="mb-4">Add New Supplier</h2>
+
+    <form th:action="@{/suppliers/save}" th:object="${supplier}" method="post" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="Enter supplier name" required>
+            <div class="invalid-feedback">
+                Please enter the supplier name.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="example@email.com" required>
+            <div class="invalid-feedback">
+                Please enter a valid email address.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="deliveryDays" class="form-label">Delivery Days</label>
+            <input type="text" id="deliveryDays" th:field="*{deliveryDays}" class="form-control" placeholder="e.g. Mon, Wed, Fri">
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <button type="button" class="btn btn-secondary ms-2" onclick="loadFragment('/suppliers')">Cancel</button>
+    </form>
+</div>

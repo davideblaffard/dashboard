@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Nuovo Contratto</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
-</head>
-<body>
-<div class="container mt-4">
+<!-- FRAGMENT FORM CONTRACTS -->
+<div th:fragment="form" class="container mt-4">
     <h2>Nuovo Dipendente</h2>
 
     <form th:action="@{/contracts/store}" method="post">
@@ -31,8 +24,8 @@
         </div>
 
         <button class="btn btn-success">Salva</button>
-        <a th:href="@{/contracts}" class="btn btn-danger">Annulla</a>
+        <button type="button" class="btn btn-secondary ms-2"
+                onclick="loadFragment('/contracts')">Annulla</button>
     </form>
 </div>
-</body>
-</html>
+
